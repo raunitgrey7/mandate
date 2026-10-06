@@ -14,7 +14,7 @@ export type ModelInfo = { provider: "anthropic" | "google" | "gateway" | "none";
 export function modelInfo(): ModelInfo {
   const fb = process.env.AI_MODEL_FALLBACK ?? null;
   if (process.env.ANTHROPIC_API_KEY) return { provider: "anthropic", id: env.ai.model || "claude-sonnet-4-5", fallback: fb ?? "claude-haiku-4-5" };
-  if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) return { provider: "google", id: env.ai.model || "gemini-3.8-flash", fallback: fb ?? "gemini-3.5-flash-lite" };
+  if (process.env.GOOGLE_GENERATIVE_AI_API_KEY) return { provider: "google", id: env.ai.model || "gemini-3.5-flash-lite", fallback: fb ?? "gemini-2.5-flash-lite" };
   if (process.env.AI_GATEWAY_API_KEY || process.env.AI_PROVIDER === "gateway") {
     return { provider: "gateway", id: env.ai.model || "anthropic/claude-sonnet-4.5", fallback: fb ?? "google/gemini-3.5-flash-lite" };
   }

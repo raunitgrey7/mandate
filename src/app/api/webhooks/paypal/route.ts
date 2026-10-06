@@ -2,6 +2,7 @@ import { getDb, schema } from "@/lib/db";
 import { verifyWebhook } from "@/lib/paypal/webhooks";
 import { appendLedger } from "@/lib/ledger";
 import { json } from "@/lib/http";
+import { getIntent, updateIntent } from "@/lib/store";
 
 type PayPalEvent = { id: string; event_type: string; summary?: string; resource?: Record<string, unknown> };
 
@@ -27,10 +28,22 @@ export async function POST(req: Request) {
     .insert(schema.webhookEvents)
     .values({ id: event.id, eventType: event.event_type, resourceId, summary: event.summary ?? "", verified, raw: event as unknown as Record<string, unknown> })
     .onConflictDoNothing();
+  const intentId = customId.startsWith("int_") ? customId : null;
   await appendLedger({
-    intentId: customId.startsWith("int_") ? customId : null,
+    intentId,
     type: `webhook.${event.event_type}`,
     payload: { eventId: event.id, resourceId, verified, summary: event.summary ?? "" },
   });
+  // Keep Mandate's view in step with PayPal's, e.g. a refund issued from the
+  // PayPal side (or through the Agent Toolkit) flips the request to refunded.
+  if (verified && intentId) {
+    const intent = await getIntent(intentId);
+    if (intent && event.event_type === "PAYMENT.CAPTURE.REFUNDED" && intent.status === "paid") {
+      await updateIntent(intentId, { status: "refunded", paypalRefundId: resourceId || intent.paypalRefundId });
+    }
+    if (intent && event.event_type === "PAYMENT.CAPTURE.DENIED" && intent.status === "paid") {
+      await updateIntent(intentId, { status: "failed", error: "Capture denied by PayPal" });
+    }
+  }
   return json({ received: true, verified });
 }

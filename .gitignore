@@ -53,3 +53,6 @@ next-env.d.ts
 skills-lock.json
 AGENTS.md
 CLAUDE.md
+gw-test.mjs
+video/
+.start.log

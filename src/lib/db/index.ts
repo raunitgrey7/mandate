@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS ledger_events (
   hash text NOT NULL,
   created_at timestamptz NOT NULL DEFAULT now()
 );
+CREATE UNIQUE INDEX IF NOT EXISTS ledger_events_prev_hash_unique ON ledger_events (prev_hash);
 CREATE TABLE IF NOT EXISTS webhook_events (
   id text PRIMARY KEY,
   event_type text NOT NULL,

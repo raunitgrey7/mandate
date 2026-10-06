@@ -22,7 +22,7 @@ Mandate turns a PayPal wallet into something an AI agent can hold without holdin
 
 ## How we built it
 
-Next.js 16 and TypeScript. PayPal REST APIs called directly for the money paths: Vault v3 setup tokens and payment tokens (PayPal wallet and card), Orders v2 with `payment_source.*.vault_id`, Payments v2 refunds, Payouts v1, and webhook signature verification. The PayPal Agent Toolkit (`@paypal/agent-toolkit/ai-sdk`) powers the owner copilot. Vercel AI SDK v7 handles structured output (the mandate compiler and the intent reviewer), tool calling (the playground agents) and streaming; the demo model is Gemini 3.8 Flash, and any provider works. The MCP server uses `mcp-handler` on the MCP SDK v2. Drizzle ORM runs on Neon Postgres when hosted and on embedded PGlite locally, so judges can run the repo with no database setup. AG Grid renders the ledger. Deployed on Vercel.
+Next.js 16 and TypeScript. PayPal REST APIs called directly for the money paths: Vault v3 setup tokens and payment tokens (PayPal wallet and card), Orders v2 with `payment_source.*.vault_id`, Payments v2 refunds, Payouts v1, and webhook signature verification. The PayPal Agent Toolkit (`@paypal/agent-toolkit/ai-sdk`) powers the owner copilot. Vercel AI SDK v7 handles structured output (the mandate compiler and the intent reviewer), tool calling (the playground agents) and streaming; the demo model is Gemini 3.5 Flash Lite, and any provider works. The MCP server uses `mcp-handler` on the MCP SDK v2. Drizzle ORM runs on Neon Postgres when hosted and on embedded PGlite locally, so judges can run the repo with no database setup. AG Grid renders the ledger. Deployed on Vercel.
 
 ## Challenges we ran into
 

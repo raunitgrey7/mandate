@@ -25,7 +25,9 @@ export default function Playground() {
       setPicked(r.scenarios.map((s) => s.key));
     });
   }, []);
-  useEffect(() => bottom.current?.scrollIntoView({ behavior: "smooth" }), [lines]);
+  useEffect(() => {
+    bottom.current?.scrollIntoView({ behavior: "smooth" });
+  }, [lines]);
 
   const run = async () => {
     setRunning(true);
@@ -156,6 +158,14 @@ function Line({ e, color }: { e: PlaygroundEvent; color: string }) {
       </div>
     );
   }
-  if (e.type === "agent.done") return <div className="fade-up flex gap-2 text-[13px]">{head}<span className="text-fg">{e.text} <span className="text-fg-3 num text-[11px]">{(e.ms / 1000).toFixed(1)}s</span></span></div>;
+  if (e.type === "agent.done")
+    return (
+      <div className="fade-up flex gap-2 text-[13px]">
+        {head}
+        <span className={e.text ? "text-fg" : "text-fg-3"}>
+          {e.text || "finished"} <span className="text-fg-3 num text-[11px]">{(e.ms / 1000).toFixed(1)}s</span>
+        </span>
+      </div>
+    );
   return <div className="fade-up flex gap-2 text-[13px]">{head}<span className="text-deny">{e.message}</span></div>;
 }

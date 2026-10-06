@@ -87,6 +87,7 @@ export async function runScenario(agent: Agent, scenario: Scenario, emit: (e: Pl
       execute: async ({ request_id }) => toolGetStatus(agent, request_id),
     }),
   };
+  let lastText = "";
   try {
     const result = await withModel((model) =>
       generateText({
@@ -100,12 +101,15 @@ You can spend the household's money only through Mandate, a governed PayPal wall
 Procedure: call get_mandate once, then make exactly one request_purchase or request_payout call for the task, then stop. Always submit the request your task asks for and let Mandate decide; do not refuse on your own. Never split a purchase to dodge a limit. If the result is needs_human, say you will wait for the owner. If denied, explain plainly why and do not retry. Keep your final message to two sentences.`,
       prompt: scenario.brief,
       onStepFinish: ({ text, toolCalls, toolResults }) => {
-        if (text?.trim()) emit({ type: "text", ...base, text });
+        if (text?.trim()) {
+          lastText = text.trim();
+          emit({ type: "text", ...base, text });
+        }
         for (const c of toolCalls) emit({ type: "tool.call", ...base, name: c.toolName, args: c.input });
         for (const r of toolResults) emit({ type: "tool.result", ...base, name: r.toolName, result: r.output });
       },
     }));
-    emit({ type: "agent.done", ...base, text: result.text, ms: Date.now() - t0 });
+    emit({ type: "agent.done", ...base, text: result.text.trim() === lastText ? "" : result.text, ms: Date.now() - t0 });
   } catch (e) {
     emit({ type: "error", ...base, message: e instanceof Error ? e.message : String(e) });
   }

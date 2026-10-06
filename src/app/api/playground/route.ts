@@ -20,7 +20,9 @@ export async function POST(req: Request) {
       async start(controller) {
         const emit = (e: PlaygroundEvent) => controller.enqueue(encoder.encode(JSON.stringify(e) + "\n"));
         await Promise.all(
-          selected.map(async (s) => {
+          selected.map(async (s, i) => {
+            // Stagger starts so four agents do not hit a free-tier rate limit in the same second.
+            await new Promise((r) => setTimeout(r, i * 4000));
             const agent = agents.find((a) => a.name.toLowerCase() === s.agent.toLowerCase() && !a.revoked);
             if (!agent) return emit({ type: "error", scenario: s.key, agent: s.agent, message: `No agent named ${s.agent}` });
             await runScenario(agent, s, emit);

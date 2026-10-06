@@ -61,7 +61,9 @@ export async function submitIntent(agent: Agent, input: NewIntent): Promise<Inte
   });
 
   // Semantic review first so the rules run on what is really being bought.
-  const { review, reviewer } = await reviewIntent(mandate.policy, mandate.sourceText, {
+  let reviewed: Awaited<ReturnType<typeof reviewIntent>>;
+  try {
+    reviewed = await reviewIntent(mandate.policy, mandate.sourceText, {
     agentName: agent.name,
     agentRole: agent.role,
     kind: intent.kind,
@@ -72,7 +74,14 @@ export async function submitIntent(agent: Agent, input: NewIntent): Promise<Inte
     category: intent.category,
     recurring: intent.recurring,
     reason: intent.reason,
-  });
+    });
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    const failed = await updateIntent(intent.id, { status: "failed", error: `Review unavailable: ${message}` });
+    await appendLedger({ intentId: intent.id, agentId: agent.id, type: "review.error", payload: { message } });
+    return failed;
+  }
+  const { review, reviewer } = reviewed;
   const agents = await listAgents();
   const usage = await spendUsage(agents);
   const engine = evaluate(mandate.policy, usage, {

@@ -27,18 +27,38 @@ export function canonical(value: unknown): string {
  * Entries carry the PayPal identifiers (order, capture, payout batch, refund)
  * so a receipt chain reads: intent -> decision -> PayPal money movement.
  */
-export async function appendLedger(args: { intentId?: string | null; agentId?: string | null; type: string; payload: Record<string, unknown> }) {
+// Appends are serialised in-process, and a UNIQUE index on prev_hash makes
+// the chain safe across processes: two writers racing for the same head
+// cannot both succeed, the loser re-reads the head and retries.
+let queue: Promise<unknown> = Promise.resolve();
+
+export function appendLedger(args: { intentId?: string | null; agentId?: string | null; type: string; payload: Record<string, unknown> }) {
+  const run = queue.then(() => appendOnce(args));
+  queue = run.catch(() => undefined);
+  return run;
+}
+
+async function appendOnce(args: { intentId?: string | null; agentId?: string | null; type: string; payload: Record<string, unknown> }) {
   const db = await getDb();
-  const [last] = await db.select().from(schema.ledgerEvents).orderBy(desc(schema.ledgerEvents.seq)).limit(1);
-  const prevHash = last?.hash ?? GENESIS;
-  const id = newId("evt");
-  const createdAt = new Date();
-  const hash = sha256(canonical({ id, prevHash, type: args.type, intentId: args.intentId ?? null, payload: args.payload, createdAt: createdAt.toISOString() }));
-  const [row] = await db
-    .insert(schema.ledgerEvents)
-    .values({ id, intentId: args.intentId ?? null, agentId: args.agentId ?? null, type: args.type, payload: { ...args.payload, _at: createdAt.toISOString() }, prevHash, hash, createdAt })
-    .returning();
-  return row;
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const [last] = await db.select().from(schema.ledgerEvents).orderBy(desc(schema.ledgerEvents.seq)).limit(1);
+    const prevHash = last?.hash ?? GENESIS;
+    const id = newId("evt");
+    const createdAt = new Date();
+    const hash = sha256(canonical({ id, prevHash, type: args.type, intentId: args.intentId ?? null, payload: args.payload, createdAt: createdAt.toISOString() }));
+    try {
+      const [row] = await db
+        .insert(schema.ledgerEvents)
+        .values({ id, intentId: args.intentId ?? null, agentId: args.agentId ?? null, type: args.type, payload: { ...args.payload, _at: createdAt.toISOString() }, prevHash, hash, createdAt })
+        .returning();
+      return row;
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : String(e);
+      if (!/unique|duplicate/i.test(msg) || attempt === 7) throw e;
+      await new Promise((r) => setTimeout(r, 25 + Math.random() * 50));
+    }
+  }
+  throw new Error("ledger append failed");
 }
 
 export async function listLedger(limit = 500): Promise<LedgerEvent[]> {

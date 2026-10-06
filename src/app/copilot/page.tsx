@@ -2,7 +2,7 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Card, PageHeader } from "@/components/ui";
 import { ownerHeaders } from "@/lib/client";
 import { Send } from "lucide-react";
@@ -21,6 +21,10 @@ export default function Copilot() {
     transport: new DefaultChatTransport({ api: "/api/copilot", headers: ownerHeaders() }),
   });
   const ready = status === "ready";
+  const bottom = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    bottom.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, status]);
   const send = (text: string) => {
     if (!text.trim() || !ready) return;
     void sendMessage({ text });
@@ -30,8 +34,8 @@ export default function Copilot() {
     <>
       <PageHeader kicker="Copilot" title={<>Talk to your PayPal account</>} />
       <div className="grid lg:grid-cols-[1.6fr_1fr] gap-4">
-        <Card className="flex flex-col min-h-[70vh]">
-          <div className="flex-1 space-y-4 overflow-auto scroll-thin pr-1">
+        <Card className="flex flex-col h-[78vh]">
+          <div className="flex-1 min-h-0 space-y-4 overflow-auto scroll-thin pr-1">
             {messages.length === 0 && (
               <div className="text-[13px] text-fg-3 py-10 text-center">
                 Ask about approvals, refunds, invoices, disputes, tracking or transactions. The PayPal side runs on the official PayPal Agent Toolkit.
@@ -44,12 +48,16 @@ export default function Copilot() {
                     if (p.type === "text") return <p key={i} className="whitespace-pre-wrap">{p.text}</p>;
                     if (p.type.startsWith("tool-")) {
                       const t = p as unknown as { type: string; state: string; input?: unknown; output?: unknown };
+                      const done = t.state === "output-available";
                       return (
-                        <div key={i} className="my-1.5 text-[12px]">
-                          <span className="pill pill-info mr-2">{t.type.replace("tool-", "")}</span>
-                          <span className="text-fg-3">{t.state === "output-available" ? "done" : "running…"}</span>
+                        <details key={i} className="my-1.5 text-[12px]">
+                          <summary className="cursor-pointer list-none flex items-center gap-2">
+                            <span className="pill pill-info">{t.type.replace("tool-", "")}</span>
+                            <span className={done ? "text-paid" : "text-wait"}>{done ? "done" : "running…"}</span>
+                            {t.output !== undefined && <span className="text-fg-3">· view result</span>}
+                          </summary>
                           {t.output !== undefined && <pre className="num text-[11px] text-fg-2 mt-1 max-h-40 overflow-auto scroll-thin whitespace-pre-wrap">{JSON.stringify(t.output, null, 1).slice(0, 1500)}</pre>}
-                        </div>
+                        </details>
                       );
                     }
                     return null;
@@ -58,6 +66,7 @@ export default function Copilot() {
               </div>
             ))}
             {error && <div className="text-[13px] text-deny">{error.message}</div>}
+            <div ref={bottom} />
           </div>
           <form
             className="mt-4 flex gap-2"
