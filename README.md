@@ -55,7 +55,7 @@ The model can only re-categorise or escalate. It can never relax a rule, and har
 ## AI integration
 
 * **Vercel AI SDK** (`ai` v7) for structured output, tool calling and streaming.
-* **Model**: any provider; the demo uses Gemini 2.5 Flash. Set `ANTHROPIC_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` or `AI_GATEWAY_API_KEY`.
+* **Model**: any provider; the demo uses Gemini 3.8 Flash. Set `ANTHROPIC_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY` or `AI_GATEWAY_API_KEY`.
 * Three LLM roles: the **mandate compiler** (`src/lib/policy/compile.ts`), the **intent reviewer** (`src/lib/policy/review.ts`) and the **playground agents** (`src/lib/playground.ts`). A rule-based fallback keeps the product usable with no key, with reduced nuance.
 * **MCP**: Mandate is itself an MCP server (`mcp-handler` + `@modelcontextprotocol/server`), so Claude Desktop, Cursor, Claude Code or an AI SDK agent can hold a governed wallet.
 

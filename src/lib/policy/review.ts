@@ -1,6 +1,6 @@
 import { generateText, Output } from "ai";
 import { z } from "zod";
-import { getModel, aiConfigured } from "@/lib/ai/model";
+import { withModel, aiConfigured } from "@/lib/ai/model";
 import { CATEGORIES, type Policy } from "./schema";
 import type { LlmReview, IntentItem } from "@/lib/db/schema";
 
@@ -33,9 +33,10 @@ export type ReviewInput = {
  */
 export async function reviewIntent(policy: Policy, mandateText: string, input: ReviewInput): Promise<{ review: LlmReview; reviewer: "llm" | "heuristic" }> {
   if (!aiConfigured()) return { review: heuristicReview(policy, input), reviewer: "heuristic" };
-  const model = await getModel();
-  const { output } = await generateText({
+  const { output } = await withModel((model) =>
+    generateText({
     model,
+    maxRetries: 1,
     output: Output.object({ schema: ReviewSchema }),
     temperature: 0,
     system: `You are the trust layer between a person's PayPal wallet and the AI agents allowed to spend from it. You read each purchase request and decide whether it matches what the owner actually wrote. You are precise, sceptical and brief. Numeric limits are enforced elsewhere; focus on meaning, intent and anything the owner would want to know before money moves.`,
@@ -53,7 +54,7 @@ export async function reviewIntent(policy: Policy, mandateText: string, input: R
       null,
       2,
     )}\n\nReturn your review.`,
-  });
+  }));
   return { review: { ...output, risk: Math.round(output.risk) }, reviewer: "llm" };
 }
 

@@ -1,6 +1,6 @@
 import { generateText, Output } from "ai";
 import { PolicySchema, DEFAULT_POLICY, type Policy, CATEGORIES } from "./schema";
-import { getModel, aiConfigured } from "@/lib/ai/model";
+import { withModel, aiConfigured } from "@/lib/ai/model";
 
 const SYSTEM = `You compile plain-English spending mandates written by a person into a strict JSON policy that governs what their AI agents may pay for through PayPal.
 
@@ -20,9 +20,10 @@ export type CompileResult = { policy: Policy; compiledBy: "llm" | "heuristic"; m
 /** Compiles mandate prose into a Policy using the configured LLM, with a rule-based fallback. */
 export async function compileMandate(text: string): Promise<CompileResult> {
   if (!aiConfigured()) return { policy: heuristicCompile(text), compiledBy: "heuristic" };
-  const model = await getModel();
+  return withModel(async (model, id) => {
   const result = await generateText({
     model,
+    maxRetries: 1,
     output: Output.object({ schema: PolicySchema }),
     system: SYSTEM,
     prompt: `Mandate:\n"""\n${text}\n"""\nReturn the policy JSON.`,
@@ -30,7 +31,8 @@ export async function compileMandate(text: string): Promise<CompileResult> {
   });
   const parsed = PolicySchema.safeParse(result.output);
   if (!parsed.success) throw new Error(`Compiler returned an invalid policy: ${parsed.error.message}`);
-  return { policy: parsed.data, compiledBy: "llm", model: typeof model === "string" ? model : model.modelId };
+  return { policy: parsed.data, compiledBy: "llm" as const, model: id };
+  });
 }
 
 /**
