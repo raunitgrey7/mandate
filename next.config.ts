@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  turbopack: { root: __dirname },
+  serverExternalPackages: ["@electric-sql/pglite", "@paypal/agent-toolkit"],
 };
 
 export default nextConfig;

@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 560" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif" font-size="13">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#7aa2ff"/></marker>
+    <marker id="g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#8ee37a"/></marker>
+  </defs>
+  <rect width="1040" height="560" rx="18" fill="#0a0c10"/>
+
+  <!-- Agents -->
+  <text x="40" y="44" fill="#6b7387" font-size="11" letter-spacing="2">AGENTS (ANY FRAMEWORK)</text>
+  <g fill="#141821" stroke="#242a37">
+    <rect x="40" y="60" width="200" height="54" rx="12"/>
+    <rect x="40" y="126" width="200" height="54" rx="12"/>
+    <rect x="40" y="192" width="200" height="54" rx="12"/>
+    <rect x="40" y="258" width="200" height="54" rx="12"/>
+  </g>
+  <g fill="#e8ebf1" font-size="14">
+    <text x="60" y="84">Claude Desktop / Code</text><text x="60" y="102" fill="#6b7387" font-size="11">MCP client</text>
+    <text x="60" y="150">OpenAI / LangGraph agent</text><text x="60" y="168" fill="#6b7387" font-size="11">MCP or REST</text>
+    <text x="60" y="216">Vercel AI SDK agent</text><text x="60" y="234" fill="#6b7387" font-size="11">createMCPClient</text>
+    <text x="60" y="282">Playground agents</text><text x="60" y="300" fill="#6b7387" font-size="11">Pantry · Travel · Growth · Ops</text>
+  </g>
+  <g stroke="#7aa2ff" stroke-width="1.5" fill="none" marker-end="url(#a)">
+    <path d="M240 87 C 290 87, 290 190, 330 190"/>
+    <path d="M240 153 C 290 153, 290 190, 330 190"/>
+    <path d="M240 219 C 290 219, 290 190, 330 190"/>
+    <path d="M240 285 C 290 285, 290 190, 330 190"/>
+  </g>
+  <text x="258" y="176" fill="#7aa2ff" font-size="11">bearer API key</text>
+
+  <!-- Mandate -->
+  <rect x="332" y="60" width="380" height="440" rx="16" fill="#0f1218" stroke="#2f3747"/>
+  <text x="352" y="88" fill="#e8ebf1" font-size="18" font-family="Georgia, serif">Mandate</text>
+  <text x="432" y="88" fill="#6b7387" font-size="11">Next.js · MCP server + REST</text>
+
+  <rect x="352" y="106" width="340" height="56" rx="10" fill="#141821" stroke="#242a37"/>
+  <text x="368" y="128" fill="#e8ebf1">1 · Semantic review</text>
+  <text x="368" y="146" fill="#a3abbd" font-size="11">LLM: true category · reason vs cart · risk 0-100 · escalate</text>
+
+  <rect x="352" y="172" width="340" height="56" rx="10" fill="#141821" stroke="#242a37"/>
+  <text x="368" y="194" fill="#e8ebf1">2 · Policy engine (deterministic)</text>
+  <text x="368" y="212" fill="#a3abbd" font-size="11">block lists · caps · budgets · per-agent scope · hours · thresholds</text>
+
+  <rect x="352" y="238" width="340" height="56" rx="10" fill="#141821" stroke="#242a37"/>
+  <text x="368" y="260" fill="#e8ebf1">3 · Decision</text>
+  <text x="368" y="278" fill="#8ee37a" font-size="11">auto-pay</text>
+  <text x="430" y="278" fill="#f5c35b" font-size="11">ask the owner</text>
+  <text x="520" y="278" fill="#ff6b7a" font-size="11">deny</text>
+
+  <rect x="352" y="304" width="340" height="56" rx="10" fill="#141821" stroke="#242a37"/>
+  <text x="368" y="326" fill="#e8ebf1">Mandate compiler</text>
+  <text x="368" y="344" fill="#a3abbd" font-size="11">plain English → Policy JSON (zod) · rationale per sentence</text>
+
+  <rect x="352" y="370" width="340" height="56" rx="10" fill="#141821" stroke="#242a37"/>
+  <text x="368" y="392" fill="#e8ebf1">Hash-chained ledger · AG Grid</text>
+  <text x="368" y="410" fill="#a3abbd" font-size="11">intent → decision → PayPal ids → webhook confirmations</text>
+
+  <rect x="352" y="436" width="340" height="48" rx="10" fill="#141821" stroke="#242a37"/>
+  <text x="368" y="456" fill="#e8ebf1">Owner copilot</text>
+  <text x="368" y="474" fill="#a3abbd" font-size="11">PayPal Agent Toolkit: orders · refunds · invoices · disputes · tracking</text>
+
+  <!-- Owner -->
+  <text x="760" y="44" fill="#6b7387" font-size="11" letter-spacing="2">OWNER</text>
+  <rect x="760" y="60" width="240" height="96" rx="12" fill="#141821" stroke="#f5c35b" stroke-opacity="0.5"/>
+  <text x="780" y="86" fill="#e8ebf1" font-size="14">Approvals inbox</text>
+  <text x="780" y="106" fill="#a3abbd" font-size="11">one tap on a phone; exceptions only</text>
+  <text x="780" y="124" fill="#a3abbd" font-size="11">Mandate editor · Ledger · Copilot</text>
+  <path d="M692 266 C 730 266, 730 108, 760 108" stroke="#f5c35b" stroke-width="1.5" fill="none" marker-end="url(#a)"/>
+  <text x="704" y="190" fill="#f5c35b" font-size="11">needs_human</text>
+
+  <!-- PayPal -->
+  <text x="760" y="214" fill="#6b7387" font-size="11" letter-spacing="2">PAYPAL SANDBOX</text>
+  <rect x="760" y="230" width="240" height="270" rx="12" fill="#141821" stroke="#8ee37a" stroke-opacity="0.5"/>
+  <g fill="#e8ebf1" font-size="13">
+    <text x="780" y="258">Vault v3</text><text x="780" y="274" fill="#6b7387" font-size="11">setup-tokens → payment-tokens (MERCHANT)</text>
+    <text x="780" y="302">Orders v2</text><text x="780" y="318" fill="#6b7387" font-size="11">create with vault_id → capture, buyer absent</text>
+    <text x="780" y="346">Payments v2</text><text x="780" y="362" fill="#6b7387" font-size="11">refunds</text>
+    <text x="780" y="390">Payouts v1</text><text x="780" y="406" fill="#6b7387" font-size="11">pay a person by email</text>
+    <text x="780" y="434">Webhooks</text><text x="780" y="450" fill="#6b7387" font-size="11">verified, pinned to the ledger</text>
+    <text x="780" y="478">Agent Toolkit</text><text x="780" y="494" fill="#6b7387" font-size="11">invoices · disputes · tracking · reports</text>
+  </g>
+  <path d="M692 300 C 730 300, 730 300, 760 300" stroke="#8ee37a" stroke-width="1.5" fill="none" marker-end="url(#g)"/>
+  <path d="M760 440 C 730 440, 730 398, 692 398" stroke="#8ee37a" stroke-width="1.5" fill="none" marker-end="url(#g)"/>
+  <text x="698" y="292" fill="#8ee37a" font-size="11">pay</text>
+
+  <text x="40" y="536" fill="#6b7387" font-size="11">The model can re-categorise or escalate a request. It can never relax a rule. Hard limits are enforced in code.</text>
+</svg>

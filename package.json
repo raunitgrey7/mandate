@@ -6,18 +6,36 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "webhook:register": "node scripts/register-webhook.mjs",
+    "typecheck": "tsc --noEmit -p ."
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.72",
+    "@ai-sdk/gateway": "^4.0.104",
+    "@ai-sdk/google": "^4.0.88",
+    "@ai-sdk/react": "^4.0.131",
+    "@electric-sql/pglite": "^0.5.8",
+    "@modelcontextprotocol/server": "^2.3.1",
+    "@neondatabase/serverless": "^1.2.0",
+    "@paypal/agent-toolkit": "^1.11.0",
+    "ag-grid-community": "^36.2.0",
+    "ag-grid-react": "^36.2.0",
+    "ai": "^7.0.128",
+    "drizzle-orm": "^0.45.3",
+    "lucide-react": "^1.52.0",
+    "mcp-handler": "^2.2.0",
     "next": "16.3.8",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
     "tailwindcss": "^4",
