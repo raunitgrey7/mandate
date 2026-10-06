@@ -6,6 +6,8 @@ Agents can already shop. Nobody will hand them the card. Mandate sits between a 
 
 Built for the PayPal AI Hackathon 2026 on the PayPal **sandbox**.
 
+**Live demo:** https://mandate-taupe.vercel.app · **Video:** see Devpost · **Repo:** https://github.com/raunitgrey7/mandate
+
 <p align="center"><img src="docs/architecture.svg" alt="Architecture" width="860"></p>
 
 ## What it does
@@ -13,7 +15,7 @@ Built for the PayPal AI Hackathon 2026 on the PayPal **sandbox**.
 | Owner side | Agent side |
 | --- | --- |
 | **Mandate editor**: prose in, policy out. The AI compiler explains how it read every sentence; hard numbers and block lists become code-enforced rules. | **MCP server** at `/api/mcp` (Streamable HTTP, bearer API key per agent). Tools: `get_mandate`, `request_purchase`, `request_payout`, `get_request_status`, `list_my_requests`. |
-| **Wallet**: link PayPal once via Vault v3 (`usage_type: MERCHANT`). Agents never see the token, only an API key to Mandate. | **REST** mirror at `/api/v1/intents` for agents that speak HTTP. |
+| **Wallet**: link PayPal once via Vault v3 (`usage_type: MERCHANT`), or vault a card server-side. Agents never see the token, only an API key to Mandate. | **REST** mirror at `/api/v1/intents` for agents that speak HTTP. |
 | **Approvals inbox**: exceptions only. Approving pays immediately through PayPal. Works on a phone. | **Playground**: four real LLM agents (Pantry, Travel, Growth, Ops) running the exact same tools, streamed live. |
 | **Ledger** (AG Grid): every request, decision, risk score and PayPal id; CSV export; SHA-256 hash chain with on-page verification. | **Payouts**: agents can pay people (a dog walker, a contractor) via PayPal Payouts when the mandate allows. |
 | **Copilot**: chat over the PayPal account using the official **PayPal Agent Toolkit** (orders, refunds, invoices, disputes, tracking, subscriptions, transaction search) plus Mandate actions (approve, deny, refund). | **Receipts**: each paid request carries the PayPal order, capture or payout batch id, and webhook confirmations are pinned to the same chain. |
@@ -42,8 +44,9 @@ The model can only re-categorise or escalate. It can never relax a rule, and har
 
 | Capability | Endpoint | Where |
 | --- | --- | --- |
-| Vault a PayPal wallet for buyer-absent charges | `POST /v3/vault/setup-tokens` → owner approves → `POST /v3/vault/payment-tokens` | `src/lib/paypal/vault.ts` |
-| Agent-initiated purchase | `POST /v2/checkout/orders` with `payment_source.paypal.vault_id`, `POST .../capture` | `src/lib/paypal/orders.ts` |
+| Vault a PayPal wallet for buyer-absent charges | `POST /v3/vault/setup-tokens` (paypal, `usage_type: MERCHANT`) → owner approves → `POST /v3/vault/payment-tokens` | `src/lib/paypal/vault.ts` |
+| Vault a card server-side (no login step) | `POST /v3/vault/setup-tokens` (card) → `POST /v3/vault/payment-tokens` | `src/lib/paypal/vault.ts`, `src/app/api/v1/wallet/card` |
+| Agent-initiated purchase | `POST /v2/checkout/orders` with `payment_source.paypal.vault_id` or `payment_source.card.vault_id`, `POST .../capture` | `src/lib/paypal/orders.ts` |
 | Refund | `POST /v2/payments/captures/{id}/refund` | `src/lib/paypal/orders.ts` |
 | Pay a person | `POST /v1/payments/payouts` | `src/lib/paypal/payouts.ts` |
 | Webhooks with signature verification | `POST /v1/notifications/verify-webhook-signature` | `src/app/api/webhooks/paypal/route.ts` |
@@ -73,7 +76,7 @@ No database setup is needed: with `DATABASE_URL` empty the app runs embedded Pos
 
 1. [developer.paypal.com](https://developer.paypal.com/dashboard/) → Testing Tools → Sandbox Accounts → create a **US Business** and a **US Personal** account.
 2. Apps & Credentials → Create App on the US business account. Under Features enable **Save payment methods (Vault)**, **Payouts**, **Invoicing**, **Transaction search**. Copy the client id and secret into `.env.local`.
-3. Start the app, open **Wallet → Link with PayPal**, and log in as the US *personal* sandbox account (its password is under the account's View/Edit menu). You are back in Mandate with the wallet linked.
+3. Start the app and open **Wallet**. Either **Link with PayPal** (log in as the US *personal* sandbox account; its password is under the account's View/Edit menu) or **Save a card** with the prefilled PayPal sandbox test card `4111 1111 1111 1111`. No login is needed for the card path.
 4. Optional: `npm run webhook:register https://your-host` and put the printed id in `PAYPAL_WEBHOOK_ID`.
 
 ### Try the flow
